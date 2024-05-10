@@ -38,14 +38,18 @@ def plot_contour(f, title, paths, names):
     ax.clabel(CS, inline=True, fontsize=10)
 
     ax.set_title(title)
+    ax.set_xlabel("X")
+    ax.set_ylabel("Y")
     plt.show()
 
 
-def plot_iterations(f_values, names):
+def plot_iterations(title, f_values, names):
     fig, ax = plt.subplots()
     ls = ["-", "--"]
     for i, (f_value, name) in enumerate(zip(f_values, names)):
         ax.plot(f_value, ls=ls[i], alpha=0.9, label=name)
     ax.legend()
-    ax.set_title("Function values vs. iteration number")
+    ax.set_title(title)
+    ax.set_xlabel("Iterations")
+    ax.set_ylabel("Objective Value")
     plt.show()

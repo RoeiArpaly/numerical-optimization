@@ -57,13 +57,18 @@ class TestUnconstrainedMin(unittest.TestCase):
                 f_values.append(minimizer.f_path)
                 print(f"SUCCESS {minimizer.success}")
 
+            shape_name = func.__name__.removeprefix("test_").replace("_", " ").title()
             plot_contour(
                 f=func,
-                title=f"Contour lines of {func.__name__}",
+                title=f"{shape_name}: Contour lines",
                 paths=paths,
                 names=self.METHODS,
             )
-            plot_iterations(f_values, self.METHODS)
+            plot_iterations(
+                title=f"{shape_name}: Function values vs. iteration number",
+                f_values=f_values,
+                names=self.METHODS,
+            )
 
 
 if __name__ == "__main__":
