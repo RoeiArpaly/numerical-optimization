@@ -46,7 +46,7 @@ class TestUnconstrainedMin(unittest.TestCase):
                     func == test_rosenbrock and method == "gradient_descent" else self.MAX_ITER
                 )
                 minimizer = LineSearchMinimization(method=method)
-                minimizer.unconstrained_minimization(
+                x, f_x, success = minimizer.unconstrained_minimization(
                     f=func,
                     x0=x0,
                     obj_tol=self.OBJ_TOL,
@@ -55,7 +55,11 @@ class TestUnconstrainedMin(unittest.TestCase):
                 )
                 paths.append(np.array(minimizer.x_path))
                 f_values.append(minimizer.f_path)
-                print(f"SUCCESS {minimizer.success}")
+                # last iteration details:
+                print(
+                    f"method: {method} -"
+                    f"(x, y): {x.round(3)}, f(x, y): {round(f_x, 3)}, success: {success}"
+                )
 
             shape_name = func.__name__.removeprefix("test_").replace("_", " ").title()
             plot_contour(
