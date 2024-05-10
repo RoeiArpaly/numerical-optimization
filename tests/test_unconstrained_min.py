@@ -1,14 +1,3 @@
-"""
-Requirements for implementing test_unconstrained_min.py:
-a. See the very first, basic example in https://docs.python.org/3/library/unittest.html for test
-module structure using Python’s unittest framework.
-b. For each of the functions in your examples file, your testing module should trigger
-minimization with all four methods, and with backtracking Wolfe conditions for step length.
-c. The test run should create two plots for each example:
-i. The contour lines of the objective with iteration paths of all methods
-ii. The function values vs. the iteration number for all methods
-"""
-
 import unittest
 import numpy as np
 
@@ -39,8 +28,8 @@ class TestUnconstrainedMin(unittest.TestCase):
         test_smoothed_corner_triangles,
     ]
     METHODS = ["gradient_descent", "newton"]
-    OBJ_TOL = 10e-12
-    PARAM_TOL = 10e-8
+    OBJ_TOL = 1e-12
+    PARAM_TOL = 1e-8
     MAX_ITER = 100
     MAX_ITER_ROSENBROCK = 10_000
 
@@ -66,14 +55,10 @@ class TestUnconstrainedMin(unittest.TestCase):
                 )
                 paths.append(np.array(minimizer.x_path))
                 f_values.append(minimizer.f_path)
-                # self.assertTrue(success)
+                print(f"SUCCESS {minimizer.success}")
 
             plot_contour(
                 f=func,
-                x_min=-10,
-                x_max=10,
-                y_min=-10,
-                y_max=10,
                 title=f"Contour lines of {func.__name__}",
                 paths=paths,
                 names=self.METHODS,
