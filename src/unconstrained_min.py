@@ -14,6 +14,7 @@ class LineSearchMinimization:
     def __init__(self, method):
         self.method = method
         self.hessian_flag = method in self.HESSIAN_METHODS
+        self.success = False
         self.x_path = []
         self.f_path = []
 
@@ -25,7 +26,9 @@ class LineSearchMinimization:
                                    max_iter,
                                    alpha=1.0,
                                    c1=0.01,
-                                   c2=0.5):
+                                   c2=0.5,
+                                   wolfe_tol=1e-6,
+                                   ):
         """
         This function implements the unconstrained minimization algorithm with Wolfe conditions.
 
@@ -50,6 +53,8 @@ class LineSearchMinimization:
             Parameter for the sufficient decrease condition (Armijo condition) in Wolfe conditions.
         c2: float, optional
             Parameter for the curvature condition in Wolfe conditions.
+        wolfe_tol: float, optional
+            The tolerance for the step size.
 
         Returns:
         --------
@@ -63,58 +68,66 @@ class LineSearchMinimization:
         x = x0
         f_x = None
         iter_count = 0
-        success = False
         for _ in range(max_iter):
-
             f_x, grad, hess = f(x, hessian_flag=self.hessian_flag)
-
             self.x_path.append(x)
             self.f_path.append(f_x)
 
             # Find the descent direction
             if self.method == "newton":
-                # # using pseudo-inverse to avoid singular matrix
-                # hess_pinv = np.linalg.pinv(hess)
-                # p = -hess_pinv @ grad
-                p = -hess @ grad
+                # using pseudo-inverse to avoid singular matrix
+                hess_pinv = np.linalg.pinv(hess)
+                p = -hess_pinv @ grad
             else:
-                p = -grad #/ np.linalg.norm(grad)
-
+                p = -grad
             # find the alpha
-            alpha = wolfe_conditions(f=f, x=x, p=p, alpha=alpha, c=c1, t=c2)
-
+            alpha = wolfe_conditions(f=f, x=x, p=p, alpha=alpha, c=c1, t=c2, tol=wolfe_tol)
             # take the step
             x_next = x + alpha * p
 
             if (
-                    np.linalg.norm(x_next - x) < param_tol or
-                    np.abs(f(x_next, False)[0] - f_x) < obj_tol
+                np.sum(np.abs(x_next - x)) < param_tol or
+                np.abs(f(x_next, False)[0] - f_x) < obj_tol
             ):
-                success = True
+                self.success = True
                 break
 
             x = x_next
             iter_count += 1
 
-        return x, f_x, success
+        return x, f_x, self.success
 
 
-def wolfe_conditions(f, x, p, alpha, c, t=0.5, tol=1e-8):
+def wolfe_conditions(f, x, p, alpha, c, t, tol=1e-6):
     """
     1. Armijo condition
         - f(x) - f(x - alpha * grad) > alpha * c * grad.T * p
     2. Curvature condition
-        - grad^T * (f(x) - f(x - alpha * grad)) > k * grad.T * p
+        - grad^T * (f(x) - f(x - alpha * grad)) > c * grad.T * p
 
-    c \in (0, 1)
-    k \in (c, 1)
+    Parameters:
+    -----------
+    f: function
+        The function to be minimized.
+    x: float
+        The current location.
+    p: float
+        The descent direction.
+    alpha: float
+        The step size.
+    c: float value between (0, 1)
+        The parameter for the sufficient decrease condition (Armijo condition) in Wolfe conditions.
+    t: float, optional
+        The parameter for reducing the step size.
+    tol: float, optional
+        The tolerance for the step size.
 
     """
-
+    _alpha = alpha
     f_x, grad, h = f(x, False)
-    while -f_x + f(x + alpha * p, False)[0] > alpha * c * grad.T @ p:
+    while f(x + _alpha * p, False)[0] - f_x > _alpha * c * grad.T @ p:
         # backtracking
-        alpha *= t
-        if alpha < tol:
+        _alpha *= t
+        if _alpha < tol:
             break
-    return alpha
+    return _alpha
