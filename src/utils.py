@@ -2,10 +2,31 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot_contour(f, x_min, x_max, y_min, y_max, title, paths=None, names=None):
+def plot_contour(f, title, paths, names):
     fig, ax = plt.subplots()
-    x = np.linspace(x_min, x_max, 100)
-    y = np.linspace(y_min, y_max, 100)
+
+    ls = ["-", "--"]
+    x_min = 0
+    x_max = 0
+    y_min = 0
+    y_max = 0
+    for i, (path, name) in enumerate(zip(paths, names)):
+        xs = path[:, 0]
+        ys = path[:, 1]
+
+        if i == 0:
+            ax.plot(xs[0], ys[0], marker="o", color="k", alpha=0.5)
+            ax.text(xs[0], ys[0], s=" Start", fontsize=12, ha="left", va="bottom")
+
+        ax.plot(xs, ys, ls=ls[i], lw=2, label=name, alpha=0.9)
+        x_min = min(x_min, np.min(xs))
+        x_max = max(x_max, np.max(xs))
+        y_min = min(y_min, np.min(ys))
+        y_max = max(y_max, np.max(ys))
+    ax.legend()
+
+    x = np.linspace(x_min - 0.5, x_max + 0.5, 100)
+    y = np.linspace(y_min - 0.5, y_max + 0.5, 100)
     X, Y = np.meshgrid(x, y)
     Zs = np.zeros(X.shape)
     for i in range(X.shape[0]):
@@ -13,20 +34,18 @@ def plot_contour(f, x_min, x_max, y_min, y_max, title, paths=None, names=None):
             Z, _, _ = f(np.array([X[i, j], Y[i, j]]), hessian_flag=False)
             Zs[i, j] = Z
 
-    ax.contour(X, Y, Zs, levels=40)
+    CS = ax.contour(X, Y, Zs, levels=20, alpha=0.75, cmap="coolwarm")
+    ax.clabel(CS, inline=True, fontsize=10)
 
-    if paths is not None:
-        for path, name in zip(paths, names):
-            ax.plot(path[:, 0], path[:, 1], label=name, alpha=0.5)
-        ax.legend()
     ax.set_title(title)
     plt.show()
 
 
 def plot_iterations(f_values, names):
     fig, ax = plt.subplots()
-    for f_value, name in zip(f_values, names):
-        ax.plot(f_value, label=name)
+    ls = ["-", "--"]
+    for i, (f_value, name) in enumerate(zip(f_values, names)):
+        ax.plot(f_value, ls=ls[i], alpha=0.9, label=name)
     ax.legend()
     ax.set_title("Function values vs. iteration number")
     plt.show()
