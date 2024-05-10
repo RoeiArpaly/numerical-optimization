@@ -64,10 +64,10 @@ def test_smoothed_corner_triangles(x, hessian_flag):
     f = first_power + second_power + third_power
     g = array([
         first_power + second_power - third_power,
-        3 * second_power - 3 * first_power,
+        3 * (first_power - second_power),
     ])
     h = array([
-        [first_power + second_power + third_power, 3 * first_power - 3 * second_power],
-        [3 * first_power - 3 * second_power, 9 * first_power + 9 * second_power]
+        [first_power + second_power + third_power, 0],
+        [0, 9 * (first_power + second_power)],
     ]) if hessian_flag else None
     return f, g, h
