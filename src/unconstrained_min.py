@@ -43,16 +43,17 @@ class LineSearchMinimization:
             objective function values, between two consecutive iterations (𝑓(𝑥𝑖+1) and 𝑓(𝑥𝑖)),
             or in the Newton Decrement based approximation of the objective decrease.
         param_tol: float
-            The numeric tolerance for successful termination in terms of small enough distance between
-            two consecutive iterations iteration locations (𝑥𝑖+1 and 𝑥𝑖).
+            The numeric tolerance for successful termination in terms of small enough distance
+            between two consecutive iterations iteration locations (𝑥𝑖+1 and 𝑥𝑖).
         max_iter: int
             The maximum allowed number of iterations.
         step_size: float, optional
             Initial step size for the line search.
-        c1: float, optional
-            Parameter for the sufficient decrease condition (Armijo condition) in Wolfe conditions.
+        c1: float value between (0, 1)
+            The parameter for the sufficient decrease condition (Armijo condition)
+            in Wolfe conditions.
         c2: float, optional
-            Parameter for the curvature condition in Wolfe conditions.
+            The parameter for reducing the step size.
         wolfe_tol: float, optional
             The tolerance for the step size.
 
