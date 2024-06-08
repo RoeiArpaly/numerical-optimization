@@ -71,3 +71,81 @@ def test_smoothed_corner_triangles(x, hessian_flag):
         [0, 9 * (first_power + second_power)],
     ]) if hessian_flag else None
     return f, g, h
+
+
+def test_qp(x, hessian_flag):
+    """
+    min x ** 2 + y ** 2 + (z + 1) ** 2
+    Subject to: x + y + z = 1
+    x ≥ 0
+    y ≥ 0
+    z ≥ 0
+    The problem finds the closest probability vector to the point (0,0, −1) = 0.
+    """
+    f = x[0] ** 2 + x[1] ** 2 + (x[2] + 1) ** 2
+    g = array([2 * x[0], 2 * x[1], 2 * (x[2] + 1)])
+    h = array([[2, 0, 0], [0, 2, 0], [0, 0, 2]]) if hessian_flag else None
+    return f, g, h
+
+
+def test_qp_ineq_constraint_1(x, hessian_flag):
+    f = -x[0]
+    g = array([-1, 0, 0])
+    h = array([[0, 0, 0], [0, 0, 0], [0, 0, 0]]) if hessian_flag else None
+    return f, g, h
+
+
+def test_qp_ineq_constraint_2(x, hessian_flag):
+    f = -x[1]
+    g = array([0, -1, 0])
+    h = array([[0, 0, 0], [0, 0, 0], [0, 0, 0]]) if hessian_flag else None
+    return f, g, h
+
+
+def test_qp_ineq_constraint_3(x, hessian_flag):
+    f = -x[2]
+    g = array([0, 0, -1])
+    h = array([[0, 0, 0], [0, 0, 0], [0, 0, 0]]) if hessian_flag else None
+    return f, g, h
+
+
+def test_lp(x, hessian_flag):
+    """
+    max[x + y]
+    Subject to: y ≥ -x + 1
+    y ≤ 1
+    x ≤ 2
+    y ≥ 0
+    """
+    f = -x[0] - x[1]
+    g = array([-1, -1])
+    h = array([[0, 0], [0, 0]]) if hessian_flag else None
+    return f, g, h
+
+
+def test_lp_ineq_constraint_1(x, hessian_flag):
+    f = -x[1] - x[0] + 1
+    g = array([-1, -1])
+    h = array([[0, 0], [0, 0]]) if hessian_flag else None
+    return f, g, h
+
+
+def test_lp_ineq_constraint_2(x, hessian_flag):
+    f = x[1] - 1
+    g = array([0, 1])
+    h = array([[0, 0], [0, 0]]) if hessian_flag else None
+    return f, g, h
+
+
+def test_lp_ineq_constraint_3(x, hessian_flag):
+    f = x[0] - 2
+    g = array([1, 0])
+    h = array([[0, 0], [0, 0]]) if hessian_flag else None
+    return f, g, h
+
+
+def test_lp_ineq_constraint_4(x, hessian_flag):
+    f = -x[1]
+    g = array([0, -1])
+    h = array([[0, 0], [0, 0]]) if hessian_flag else None
+    return f, g, h
