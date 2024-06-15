@@ -6,7 +6,9 @@ from numpy import (
 
 
 def test_circles(x, hessian_flag):
-    # f(x) = (x.T) * Q * x
+    """
+    f(x) = (x.T) * Q * x
+    """
     Q = array([[1, 0], [0, 1]])
     f = 1/2 * x.T @ Q @ x
     g = Q @ x
@@ -15,7 +17,9 @@ def test_circles(x, hessian_flag):
 
 
 def test_ellipses(x, hessian_flag):
-    # f(x) = (x.T) * Q * x
+    """
+    f(x) = (x.T) * Q * x
+    """
     Q = array([[1, 0], [0, 100]])
     f = 1/2 * x.T @ Q @ x
     g = Q @ x
@@ -24,7 +28,9 @@ def test_ellipses(x, hessian_flag):
 
 
 def test_rotated_ellipses(x, hessian_flag):
-    # f(x) = (x.T) * Q * x
+    """
+    f(x) = (x.T) * Q * x
+    """
     Q = array([[sqrt(3)/2, -0.5], [0.5, sqrt(3)/2]])
     Q = Q.T @ array([[100, 0], [0, 1]]) @ Q
     f = 1/2 * x.T @ Q @ x
@@ -34,7 +40,9 @@ def test_rotated_ellipses(x, hessian_flag):
 
 
 def test_rosenbrock(x, hessian_flag):
-    # f(x) = 100 * (x2 - x1 ** 2) ** 2 + (1 - x1) ** 2
+    """
+    f(x) = 100 * (x2 - x1 ** 2) ** 2 + (1 - x1) ** 2
+    """
     f = 100 * (x[1] - x[0] ** 2) ** 2 + (1 - x[0]) ** 2
     g = array([
         400 * x[0] ** 3 - 400 * x[0] * x[1] + 2 * x[0] - 2,
@@ -48,7 +56,9 @@ def test_rosenbrock(x, hessian_flag):
 
 
 def test_linear(x, hessian_flag):
-    # f(x) = a.T * x
+    """
+    f(x) = a.T * x
+    """
     a = array([1, 2])
     f = a.T @ x
     g = a
@@ -57,7 +67,9 @@ def test_linear(x, hessian_flag):
 
 
 def test_smoothed_corner_triangles(x, hessian_flag):
-    # f(x1, x2) = e^(x1+3x2-0.1) + e^(x1-3x2-0.1) + e^(-x1-0.1)
+    """
+    f(x1, x2) = e ** (x1+3x2-0.1) + e ** (x1-3x2-0.1) + e **(-x1-0.1)
+    """
     first_power = exp(x[0] + 3 * x[1] - 0.1)
     second_power = exp(x[0] - 3 * x[1] - 0.1)
     third_power = exp(-x[0] - 0.1)
