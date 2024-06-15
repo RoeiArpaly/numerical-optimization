@@ -9,8 +9,10 @@ class InteriorPointMinimizer:
 
     def __init__(self):
         self.success = False
-        self.x_path = []
-        self.f_path = []
+        self.x_path_inner = []
+        self.f_path_inner = []
+        self.x_path_outer = []
+        self.f_path_outer = []
 
     def interior_pt(
         self,
@@ -32,13 +34,10 @@ class InteriorPointMinimizer:
         x = x0
         t = self.T
 
-        f_x, g_x, h_x = func(x, True)
-        f_x_phi, g_x_phi, h_x_phi = phi(ineq_constraints, x)
-        f_x = t * f_x + f_x_phi
-        g_x = t * g_x + g_x_phi
-        h_x = t * h_x + h_x_phi
-
-        for _ in range(max_iter):
+        self.x_path_outer.append(x)
+        self.f_path_outer.append(func(x, False)[0])
+        f_x, g_x, h_x = self.update_step(func, x, ineq_constraints, t)
+        for i in range(max_iter):
             if eq_const_n:
                 block_matrix = np.concatenate([
                     np.concatenate([h_x, eq_constraints_mat.T], axis=1),
@@ -51,7 +50,7 @@ class InteriorPointMinimizer:
 
             x_prev = np.inf
             f_prev = np.inf
-            for i in range(max_iter):
+            for j in range(max_iter):
                 p = np.linalg.solve(block_matrix, eq_vec)[: x.shape[0]]
                 lambda_ = np.matmul(p.transpose(), np.matmul(h_x, p)) ** 0.5
                 if 0.5 * (lambda_ ** 2) < tol or sum(abs(x_prev - x)) < tol or f_prev - f_x < tol:
@@ -62,20 +61,25 @@ class InteriorPointMinimizer:
                 x_prev = x
                 f_prev = f_x
                 x = x + alpha * p
-                f_x, g_x, h_x = func(x, True)
-                f_x_phi, g_x_phi, h_x_phi = phi(ineq_constraints, x)
-                self.x_path.append(x)
-                self.f_path.append(f_x)
-                f_x = t * f_x + f_x_phi
-                g_x = t * g_x + g_x_phi
-                h_x = t * h_x + h_x_phi
+                f_x, g_x, h_x = self.update_step(func, x, ineq_constraints, t)
 
             if ineq_constraints.shape[0] / t < tol:
                 self.success = True
                 break
+
+            self.x_path_outer.append(x)
+            self.f_path_outer.append(func(x, False)[0])
+
             t *= self.MU
 
         return x, func(x, True)[0], self.success
+
+    def update_step(self, func, x, ineq_constraints, t):
+        f_x, g_x, h_x = func(x, True)
+        self.x_path_inner.append(x)
+        self.f_path_inner.append(f_x)
+        f_x, g_x, h_x = update_phi(ineq_constraints, x, f_x, g_x, h_x, t)
+        return f_x, g_x, h_x
 
 
 def phi(ineq_constraints, x):
@@ -92,3 +96,11 @@ def phi(ineq_constraints, x):
         ) * np.tile(g.reshape(g.shape[0], -1).T, (g.shape[0], 1))
         h_star += (h_x * f_x - g_mesh) / f_x**2
     return -f_star, -g_star, -h_star
+
+
+def update_phi(ineq_constraints, x, f_x, g_x, h_x, t):
+    f_x_phi, g_x_phi, h_x_phi = phi(ineq_constraints, x)
+    f_x = t * f_x + f_x_phi
+    g_x = t * g_x + g_x_phi
+    h_x = t * h_x + h_x_phi
+    return f_x, g_x, h_x
