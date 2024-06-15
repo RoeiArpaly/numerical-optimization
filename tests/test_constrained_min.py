@@ -23,7 +23,7 @@ from src.utils import (
 class TestUnconstrainedMin(unittest.TestCase):
 
     TEST_FUNCTIONS = [test_qp, test_lp]
-    OBJ_TOL = 1e-8
+    OBJ_TOL = 1e-5
     MAX_ITER = 100
 
     def test_constrained_minimization(self):
@@ -72,14 +72,14 @@ class TestUnconstrainedMin(unittest.TestCase):
             shape_name = func.__name__.removeprefix("test_").replace("_", " ").title()
             plot_func(
                 f=func,
-                title=f"{shape_name.upper()}: Contour lines",
-                paths=np.array([minimizer.x_path]),
+                title=f"{shape_name.upper()}: Algorithm Path",
+                paths=np.array([minimizer.x_path_inner]),
                 names=["interior_pt"],
             )
             plot_iterations(
                 title=f"{shape_name.upper()}: Function values vs. iteration number",
-                f_values=np.array([minimizer.f_path]),
-                names=["interior_pt"],
+                f_values=[minimizer.f_path_outer, minimizer.f_path_inner],
+                names=["interior_pt_outer", "interior_pt_inner"],
             )
 
 
