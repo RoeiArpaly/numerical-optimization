@@ -23,7 +23,7 @@ from src.utils import (
 class TestUnconstrainedMin(unittest.TestCase):
 
     TEST_FUNCTIONS = [test_qp, test_lp]
-    OBJ_TOL = 1e-5
+    OBJ_TOL = 1e-10
     MAX_ITER = 100
 
     def test_constrained_minimization(self):
@@ -67,7 +67,8 @@ class TestUnconstrainedMin(unittest.TestCase):
                 max_iter=self.MAX_ITER,
             )
             # last iteration details:
-            print(f"(x, y): {x.round(3)}, f(x, y): {round(f_x, 3)}, success: {success}")
+            np.set_printoptions(suppress=True)
+            print(f"(x, y): {x.round(7)}, f(x, y): {round(f_x, 7)}, success: {success}")
 
             shape_name = func.__name__.removeprefix("test_").replace("_", " ").title()
             plot_func(
