@@ -42,7 +42,6 @@ def plot_contour(f, title, paths, names):
     ax.set_title(title)
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
-    # fig.savefig(f"{title}.png")
     plt.show()
 
 
@@ -55,7 +54,6 @@ def plot_iterations(title, f_values, names):
     ax.set_title(title)
     ax.set_xlabel("Iterations")
     ax.set_ylabel("Objective Value")
-    # fig.savefig(f"{title}.png")
     plt.show()
 
 
@@ -98,13 +96,13 @@ def plot_feasible_region_3d(f, title, paths, names):
 
     # Plot the feasible region (x + y + z = 1)
     ax.plot_surface(X, Y, Z, alpha=0.2, rstride=100, cstride=100, color="tab:blue")
+    ax.view_init(elev=20, azim=330)
 
     # Set labels
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
     ax.set_zlabel("Z")
     ax.set_title(title)
-    # fig.savefig(f"{title}.png")
     plt.show()
 
 
@@ -162,5 +160,4 @@ def plot_feasible_region_2d(f, title, paths, names):
     ax.set_title(title)
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
-    # fig.savefig(f"{title}.png")
     plt.show()
